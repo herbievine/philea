@@ -1,30 +1,34 @@
-import {
-  WagmiConfig,
-  createClient,
-  defaultChains,
-  configureChains,
-} from 'wagmi'
-import { publicProvider } from 'wagmi/providers/public'
-import { MetaMaskConnector } from 'wagmi/connectors/metaMask'
-import { WalletConnectConnector } from 'wagmi/connectors/walletConnect'
+import { getDefaultWallets, RainbowKitProvider } from "@rainbow-me/rainbowkit";
+import { chain, configureChains, createClient } from "wagmi";
+import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-const { chains, provider, webSocketProvider } = configureChains(defaultChains, [
-  publicProvider(),
-])
+const { chains, provider } = configureChains(
+  [chain.mainnet, chain.polygon],
+  [
+    jsonRpcProvider({
+      rpc: (chain) => {
+        if (chain.id === 1)
+          return {
+            http: `https://eth-mainnet.nodereal.io/v1/${process.env.RPC_API_KEY}`,
+          };
 
-const client = createClient({
-  autoConnect: false,
-  connectors: [
-    new MetaMaskConnector({ chains }),
-		new WalletConnectConnector({
-      chains,
-      options: {
-        qrcode: true,
+        return {
+          http: `https://polygon-mainnet.nodereal.io/v1/${process.env.RPC_API_KEY}`,
+        };
       },
     }),
-  ],
-  provider,
-  webSocketProvider,
-})
+  ]
+);
 
-export  default client
+const { connectors } = getDefaultWallets({
+  appName: "Philea",
+  chains,
+});
+
+const wagmiClient = createClient({
+  autoConnect: true,
+  connectors,
+  provider,
+});
+
+export { wagmiClient, chains };
