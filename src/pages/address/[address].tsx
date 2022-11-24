@@ -1,9 +1,12 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dayjs from "dayjs";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
+import { useAccount } from "wagmi";
+import Giving from "../../assets/Giving";
 import Seed from "../../assets/Seed";
 import { useAppStateStore } from "../../hooks/useAppStateStore";
 import { emissionsApiSchema, etherscanApiSchema } from "../../lib/schema";
@@ -12,8 +15,10 @@ interface IAddressProps {}
 
 const Address: NextPage<IAddressProps> = () => {
   const [totalEmissions, setTotalEmissions] = useState(0);
+  const [donateValue, setDonateValue] = useState(0);
   const { address } = useRouter().query;
   const { loading, setLoading, error, setError } = useAppStateStore((s) => s);
+  const { address: connectedAddress, isConnected } = useAccount();
   const { data: txs } = useQuery(
     ["txs"],
     async () => {
@@ -82,15 +87,19 @@ const Address: NextPage<IAddressProps> = () => {
 
   return (
     <div className="w-full h-screen grid overflow-hidden grid-cols-2 grid-rows-2">
-      <div className="w-full h-full flex justify-center items-center">
+      <div className="w-full h-full flex justify-around items-center">
         <div className="w-2/3 h-3/4 p-8 flex flex-col rounded-xl shadow-md bg-[#0e76fd] text-white">
           <div className="flex items-center space-x-2">
             <h1 className="font-black text-lg">Your Carbon Footprint Card</h1>
             <Seed width={20} fill="white" />
           </div>
-          <div className="w-full h-full flex flex-col justify-center items-center">
+          <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
             <span className="text-3xl font-black">
-              {totalEmissions.toFixed(2)}kg of CO<sub>2</sub>
+              {totalEmissions.toFixed(2)}kg of CO
+              <sub className="font-black">2</sub>
+            </span>
+            <span className="text-3xl font-black">
+              or approx ${(totalEmissions * 0.02).toFixed(2)}
             </span>
             <span className="text-xl font-black">
               since{" "}
@@ -99,25 +108,54 @@ const Address: NextPage<IAddressProps> = () => {
           </div>
         </div>
       </div>
-      <div className="w-full h-full col-start-2 col-span-2 flex justify-center items-center">
-        <div className="flex flex-col space-y-4">
-          <div className="w-1/6 h-4 bg-black" />
-          <h1 className="text-2xl font-black">
-            Discover ways to reduce your carbon footprint
-          </h1>
-          <h2>
-            Here is your carbon footprint card. It shows the amount of carbon
-            <br />
-            dioxide you have emitted since you started using Ethereum. Below
-            <br />
-            you can find ways to reduce your carbon footprint, and repay the
-            <br />
-            debt you have created.
-          </h2>
+      <div className="w-full h-full flex justify-around items-center">
+        <div className="w-2/3 h-3/4 flex justify-center items-center">
+          <div className="flex flex-col space-y-4">
+            <div className="w-1/6 h-4 bg-black" />
+            <h2 className="text-2xl font-black">
+              Discover ways to reduce your carbon footprint
+            </h2>
+            <p>
+              Here is your carbon footprint card. It shows the amount of carbon
+              dioxide you have emitted since you started using Ethereum. Below
+              you can donate to carbon offsetting projects to reduce your carbon
+              footprint, or you can learn more about how to reduce your carbon
+              footprint in the future.
+            </p>
+          </div>
         </div>
       </div>
-      <div className="w-full h-full bg-green-500 col-span-2 flex justify-center items-center">
-        3
+      <div className="w-full h-full flex justify-around items-center">
+        <div className="w-2/3 h-3/4 flex justify-center items-center">
+          <div className="flex flex-col space-y-4">
+            <div className="w-1/6 h-4 bg-black" />
+            <h2 className="text-2xl font-black">Donate to SmartB</h2>
+            <p>
+              Increase access of households and communities to improved
+              cookstoves by disseminating high thermal efficiency and low
+              greenhouse gas emitting cooking stoves known as Improved Cook
+              Stoves (ICS) to the rural and urban households of Uganda.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div className="w-full h-full flex justify-around items-center">
+        <div className="w-2/3 h-3/4 p-8 flex flex-col rounded-xl shadow-md bg-gray-100">
+          <div className="flex justify-between items-center space-x-2">
+            <h1 className="font-black text-lg">Donate to SmartB</h1>
+            {isConnected && <ConnectButton showBalance={true} />}
+          </div>
+          <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
+            {isConnected ? (
+              <>
+                <p>asas</p>
+                <p>asass</p>
+              </>
+            ) : (
+              <ConnectButton chainStatus="icon" showBalance={false} />
+            )}
+          </div>
+        </div>
       </div>
     </div>
   );
