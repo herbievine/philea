@@ -83,7 +83,9 @@ Due to this incertitude, and our willingness to have a functionable prototype, w
 It is also one of the blockchain where we thought our solution could make the more sense.
 
 We tried to use Starton to implement a contract for the transactions.
-However our level of knowledge regarding smart contracts weren't enough, we will keep that for further developments. 
+However our level of knowledge regarding smart contracts weren't enough, we will keep that for further developments.
+It is also mainly due to the fact that the Eth. network was busy and so the fees were high. 
+Mistakes could have cost us a lot.
 We plan to improve our tool with a flexible token smart contract, to have a trace of the compensation made.
 Indeed, it will be useful if we manage to create rewards from newly produced carbon credits.
 
