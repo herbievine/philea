@@ -3,7 +3,7 @@ import type React from "react";
 import Chevron from "../assets/Chevron";
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useEffect, useState } from "react";
-import { useAccount } from "wagmi";
+import { useAccount, useDisconnect } from "wagmi";
 import { useAddressStore } from "../hooks/useAddressStore";
 import { useAppStateStore } from "../hooks/useAppStateStore";
 import Link from "next/link";
@@ -12,18 +12,22 @@ import Hero from "../assets/Hero";
 interface IHomeProps {}
 
 const Home: NextPage<IHomeProps> = () => {
-  // const [address, setAddress] = useState(null);
+  const [tempAddress, setTempAddress] = useState("");
   const { error } = useAppStateStore((state) => state);
   const { address, setAddress } = useAddressStore((state) => state);
-  const { address: connectedAddress } = useAccount();
+  const { address: connectedAddress, isDisconnected } = useAccount();
+  const { disconnect } = useDisconnect();
 
-  useEffect(
-    () => connectedAddress && setAddress(connectedAddress),
-    [connectedAddress, setAddress]
-  );
+  useEffect(() => {
+    if (connectedAddress) setAddress(connectedAddress);
+  }, [connectedAddress, setAddress, isDisconnected]);
 
   const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setAddress(e.target.value);
+    setTempAddress(e.target.value);
+    if (e.target.value.trim().match(/^0x[0-9a-fA-F]{40}$/)) {
+      setAddress(e.target.value);
+      disconnect();
+    }
   };
 
   useEffect(() => {
@@ -54,16 +58,18 @@ const Home: NextPage<IHomeProps> = () => {
           <ConnectButton chainStatus="icon" showBalance={false} />
           <input
             type="text"
+            value={tempAddress}
             onChange={handleAddressChange}
             placeholder="Or Enter your Ethereum Address..."
             className={`px-4 py-2 grow shadow-lg rounded-lg focus:outline-none ${
-              error?.key === "address" &&
-              "focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              error?.key === "address" && "ring-2 ring-red-500"
             }`}
           />
           <Link
             href={address ? `/address/${address}` : "#"}
-            className="px-4 py-2 flex items-center shadow-lg rounded-lg focus:outline-none hover:scale-105 duration-75"
+            className={`px-4 py-2 flex items-center shadow-lg rounded-lg focus:outline-none hover:scale-105 duration-75 ${
+              address ? "bg-[#0e76fd] text-white" : "text-gray-400"
+            }`}
           >
             Go <Chevron className="ml-2 -rotate-90" />
           </Link>

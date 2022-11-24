@@ -15,31 +15,26 @@ interface AppStateStore {
 }
 
 const useAppStateStore = create<AppStateStore>()(
-  devtools(
-    (set) => ({
-      loading: false,
-      setLoading: (state: boolean) => {
-        try {
-          z.boolean().parse(state);
-          set({ loading: state });
-        } catch (error) {
-          set({
-            error: {
-              key: "unknown",
-              msg: "Invalid state",
-            },
-          });
-        }
-      },
-      error: null,
-      setError: (state: Error | null) => {
-        set({ error: state });
-      },
-    }),
-    {
-      name: "app-state-storage",
-    }
-  )
+  devtools((set) => ({
+    loading: false,
+    setLoading: (state: boolean) => {
+      try {
+        z.boolean().parse(state);
+        set({ loading: state });
+      } catch (error) {
+        set({
+          error: {
+            key: "unknown",
+            msg: "Invalid state",
+          },
+        });
+      }
+    },
+    error: null,
+    setError: (state: Error | null) => {
+      set({ error: state });
+    },
+  }))
 );
 
 export { useAppStateStore };

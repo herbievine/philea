@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import type React from "react";
 import { useState } from "react";
 import { useQuery } from "react-query";
+import Seed from "../../assets/Seed";
 import { useAppStateStore } from "../../hooks/useAppStateStore";
 import { emissionsApiSchema, etherscanApiSchema } from "../../lib/schema";
 
@@ -75,13 +76,49 @@ const Address: NextPage<IAddressProps> = () => {
     }
   );
 
+  if (loading) return <div>Loading...</div>;
+  if (!txs || txs?.length === 0)
+    return <div>No transactions found for this address</div>;
+
   return (
-    <div className="">
-      <h1>Address: {address}</h1>
-      <h2>
-        Total Emissions: {totalEmissions} kg of CO<sub>2</sub> since{" "}
-        {txs && dayjs.unix(parseInt(txs[0].timeStamp)).format("DD/MM/YYYY")}
-      </h2>
+    <div className="w-full h-screen grid overflow-hidden grid-cols-2 grid-rows-2">
+      <div className="w-full h-full flex justify-center items-center">
+        <div className="w-2/3 h-3/4 p-8 flex flex-col rounded-xl shadow-md bg-[#0e76fd] text-white">
+          <div className="flex items-center space-x-2">
+            <h1 className="font-black text-lg">Your Carbon Footprint Card</h1>
+            <Seed width={20} fill="white" />
+          </div>
+          <div className="w-full h-full flex flex-col justify-center items-center">
+            <span className="text-3xl font-black">
+              {totalEmissions.toFixed(2)}kg of CO<sub>2</sub>
+            </span>
+            <span className="text-xl font-black">
+              since{" "}
+              {dayjs.unix(parseInt(txs[0].timeStamp)).format("MMM DD, YYYY")}
+            </span>
+          </div>
+        </div>
+      </div>
+      <div className="w-full h-full col-start-2 col-span-2 flex justify-center items-center">
+        <div className="flex flex-col space-y-4">
+          <div className="w-1/6 h-4 bg-black" />
+          <h1 className="text-2xl font-black">
+            Discover ways to reduce your carbon footprint
+          </h1>
+          <h2>
+            Here is your carbon footprint card. It shows the amount of carbon
+            <br />
+            dioxide you have emitted since you started using Ethereum. Below
+            <br />
+            you can find ways to reduce your carbon footprint, and repay the
+            <br />
+            debt you have created.
+          </h2>
+        </div>
+      </div>
+      <div className="w-full h-full bg-green-500 col-span-2 flex justify-center items-center">
+        3
+      </div>
     </div>
   );
 };
