@@ -8,6 +8,10 @@ import { useQuery } from "react-query";
 import { useAccount } from "wagmi";
 import Giving from "../../assets/Giving";
 import Seed from "../../assets/Seed";
+import DonateCard from "../../components/DonateCard";
+import GreenCard from "../../components/GreenCard";
+import HowDonate from "../../components/HowDonate";
+import SmartBCard from "../../components/SmartBCard";
 import { useAppStateStore } from "../../hooks/useAppStateStore";
 import { emissionsApiSchema, etherscanApiSchema } from "../../lib/schema";
 
@@ -15,7 +19,6 @@ interface IAddressProps {}
 
 const Address: NextPage<IAddressProps> = () => {
   const [totalEmissions, setTotalEmissions] = useState(0);
-  const [donateValue, setDonateValue] = useState(0);
   const { address } = useRouter().query;
   const { loading, setLoading, error, setError } = useAppStateStore((s) => s);
   const { address: connectedAddress, isConnected } = useAccount();
@@ -81,118 +84,24 @@ const Address: NextPage<IAddressProps> = () => {
     }
   );
 
-  const handleDonateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value === "") setDonateValue(0);
-    setDonateValue(parseFloat(e.target.value));
-  };
-
-  if (loading) return <div>Loading...</div>;
+  if (loading)
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        Loading...
+      </div>
+    );
   if (!txs || txs?.length === 0)
     return <div>No transactions found for this address</div>;
 
   return (
     <div className="w-full h-screen grid overflow-hidden grid-cols-2 grid-rows-2">
-      <div className="w-full h-full flex justify-around items-center">
-        <div className="w-2/3 h-3/4 p-8 flex flex-col rounded-xl shadow-md bg-[#0e76fd] text-white">
-          <div className="flex items-center space-x-2">
-            <h1 className="font-black text-lg">Your Carbon Footprint Card</h1>
-            <Seed width={20} fill="white" />
-          </div>
-          <div className="w-full h-full flex flex-col justify-center items-center space-y-2">
-            <span className="text-3xl font-black">
-              {totalEmissions.toFixed(2)}kg of CO
-              <sub className="font-black">2</sub>
-            </span>
-            <span className="text-3xl font-black">
-              or approx ${(totalEmissions * 0.02).toFixed(2)}
-            </span>
-            <span className="text-xl font-black">
-              since{" "}
-              {dayjs.unix(parseInt(txs[0].timeStamp)).format("MMM DD, YYYY")}
-            </span>
-          </div>
-        </div>
-      </div>
-      <div className="w-full h-full flex justify-around items-center">
-        <div className="w-2/3 h-3/4 flex justify-center items-center">
-          <div className="flex flex-col space-y-4">
-            <div className="w-1/6 h-4 bg-black" />
-            <h2 className="text-2xl font-black">
-              Discover ways to reduce your carbon footprint
-            </h2>
-            <p>
-              Here is your carbon footprint card. It shows the amount of carbon
-              dioxide you have emitted since you started using Ethereum. Below
-              you can donate to carbon offsetting projects to reduce your carbon
-              footprint, or you can learn more about how to reduce your carbon
-              footprint in the future.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="w-full h-full flex justify-around items-center">
-        <div className="w-2/3 h-3/4 flex justify-center items-center">
-          <div className="flex flex-col space-y-4">
-            <div className="w-1/6 h-4 bg-black" />
-            <h2 className="text-2xl font-black">
-              Donate to SmartB: Project Cookstove
-            </h2>
-            <p>
-              Increase access of households and communities to improved
-              cookstoves by disseminating high thermal efficiency and low
-              greenhouse gas emitting cooking stoves known as Improved Cook
-              Stoves (ICS) to the rural and urban households of Uganda.
-            </p>
-          </div>
-        </div>
-      </div>
-      <div className="w-full h-full flex justify-around items-center">
-        <div className="w-2/3 h-3/4 flex flex-col justify-center items-center space-y-8">
-          <div
-            className={`w-full flex items-center space-x-2 ${
-              isConnected ? "justify-between" : "flex-col"
-            }`}
-          >
-            <h1 className="font-black text-2xl">Donate to SmartB</h1>
-            {isConnected && <ConnectButton showBalance={false} />}
-          </div>
-          <div className="w-full flex flex-col items-center space-y-4">
-            {isConnected ? (
-              <>
-                <div className="w-full flex justify-between items-center">
-                  <p>Donate USDC</p>
-                  <p>
-                    Dept{" "}
-                    {!donateValue
-                      ? 0
-                      : Math.round(
-                          (
-                            (donateValue / (totalEmissions * 0.02)) *
-                            100
-                          ).toFixed(2)
-                        )}
-                    % covered
-                  </p>
-                </div>
-                <input
-                  type="number"
-                  value={donateValue}
-                  onChange={handleDonateChange}
-                  placeholder="Donation Amount in USDC"
-                  className="px-4 py-2 w-full shadow-lg rounded-lg focus:outline-none"
-                />
-                <div className="w-full flex justify-end">
-                  <button className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75">
-                    Donate {!donateValue ? 0 : donateValue} USDC
-                  </button>
-                </div>
-              </>
-            ) : (
-              <ConnectButton chainStatus="icon" showBalance={false} />
-            )}
-          </div>
-        </div>
-      </div>
+      <GreenCard
+        totalEmissions={totalEmissions}
+        firstTxTimestamp={txs[0].timeStamp}
+      />
+      <HowDonate />
+      <SmartBCard />
+      <DonateCard totalEmissions={totalEmissions} />
     </div>
   );
 };
