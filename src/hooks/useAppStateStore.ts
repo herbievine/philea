@@ -1,6 +1,6 @@
 import create from "zustand";
 import * as z from "zod";
-import { devtools, persist } from "zustand/middleware";
+import { devtools } from "zustand/middleware";
 
 interface Error {
   key: "address" | "no-txs" | "unknown";
@@ -16,31 +16,29 @@ interface AppStateStore {
 
 const useAppStateStore = create<AppStateStore>()(
   devtools(
-    persist(
-      (set) => ({
-        loading: false,
-        setLoading: (state: boolean) => {
-          try {
-            z.boolean().parse(state);
-            set({ loading: state });
-          } catch (error) {
-            set({
-              error: {
-                key: "unknown",
-                msg: "Invalid state",
-              },
-            });
-          }
-        },
-        error: null,
-        setError: (state: Error | null) => {
-          set({ error: state });
-        },
-      }),
-      {
-        name: "app-state-storage",
-      }
-    )
+    (set) => ({
+      loading: false,
+      setLoading: (state: boolean) => {
+        try {
+          z.boolean().parse(state);
+          set({ loading: state });
+        } catch (error) {
+          set({
+            error: {
+              key: "unknown",
+              msg: "Invalid state",
+            },
+          });
+        }
+      },
+      error: null,
+      setError: (state: Error | null) => {
+        set({ error: state });
+      },
+    }),
+    {
+      name: "app-state-storage",
+    }
   )
 );
 

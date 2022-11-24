@@ -7,12 +7,13 @@ import { useAccount } from "wagmi";
 import { useAddressStore } from "../hooks/useAddressStore";
 import { useAppStateStore } from "../hooks/useAppStateStore";
 import Link from "next/link";
+import Hero from "../assets/Hero";
 
 interface IHomeProps {}
 
 const Home: NextPage<IHomeProps> = () => {
   // const [address, setAddress] = useState(null);
-  const { loading } = useAppStateStore((state) => state);
+  const { error } = useAppStateStore((state) => state);
   const { address, setAddress } = useAddressStore((state) => state);
   const { address: connectedAddress } = useAccount();
 
@@ -21,9 +22,19 @@ const Home: NextPage<IHomeProps> = () => {
     [connectedAddress, setAddress]
   );
 
+  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setAddress(e.target.value);
+  };
+
+  useEffect(() => {
+    console.log({ error });
+  }, [error]);
+
   return (
-    <div className="w-full h-screen flex justify-around items-center">
-      <div className="">image</div>
+    <div className="w-full h-screen flex justify-evenly items-center">
+      <div className="">
+        <Hero height={500} />
+      </div>
       <div className="flex flex-col space-y-4">
         <div className="w-1/6 h-4 bg-black" />
         <h1 className="text-2xl font-black">
@@ -41,13 +52,17 @@ const Home: NextPage<IHomeProps> = () => {
         </ol>
         <div className="w-full flex items-center space-x-4">
           <ConnectButton chainStatus="icon" showBalance={false} />
-          {/* <input
+          <input
             type="text"
-            placeholder="Enter your Ethereum address..."
-            className="px-4 py-2 grow shadow-lg rounded-lg focus:outline-none"
-          /> */}
+            onChange={handleAddressChange}
+            placeholder="Or Enter your Ethereum Address..."
+            className={`px-4 py-2 grow shadow-lg rounded-lg focus:outline-none ${
+              error?.key === "address" &&
+              "focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            }`}
+          />
           <Link
-            href={`/address/${address}`}
+            href={address ? `/address/${address}` : "#"}
             className="px-4 py-2 flex items-center shadow-lg rounded-lg focus:outline-none hover:scale-105 duration-75"
           >
             Go <Chevron className="ml-2 -rotate-90" />
