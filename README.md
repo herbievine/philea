@@ -91,4 +91,16 @@ We manage to connect Metamask and Ledger, and we are using Nodereal to interact 
 
 We wanted to add the possibility to give recommendations on when and where (which blokchain) make a transaction a time t thanks to iExec oracles. 
 Due to lack of time, we weren't able to do so.
+
+Used :
+- NodeReal
+- Ledger
+- (Metamask)
+
+Partially used :
+- BNB Chain
+
+Will be used :
+- Starton
+- iExec
 ```
