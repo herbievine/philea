@@ -1,4 +1,12 @@
-import { getDefaultWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
+import {
+  metaMaskWallet,
+  rainbowWallet,
+  walletConnectWallet,
+  coinbaseWallet,
+  braveWallet,
+  ledgerWallet,
+} from "@rainbow-me/rainbowkit/wallets";
 import { chain, configureChains, createClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
@@ -20,10 +28,24 @@ const { chains, provider } = configureChains(
   ]
 );
 
-const { connectors } = getDefaultWallets({
-  appName: "Philea",
-  chains,
-});
+const connectors = connectorsForWallets([
+  {
+    groupName: "Recommended",
+    wallets: [
+      ledgerWallet({ chains }),
+      rainbowWallet({ chains }),
+      metaMaskWallet({ chains }),
+    ],
+  },
+  {
+    groupName: "Other",
+    wallets: [
+      braveWallet({ chains }),
+      coinbaseWallet({ appName: "Philea", chains }),
+      walletConnectWallet({ chains }),
+    ],
+  },
+]);
 
 const wagmiClient = createClient({
   autoConnect: true,
