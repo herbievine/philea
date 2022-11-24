@@ -1,7 +1,15 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
+import { BigNumber } from "ethers";
+import { parseEther } from "ethers/lib/utils.js";
 import type React from "react";
 import { useState } from "react";
-import { useAccount } from "wagmi";
+import { useQuery } from "react-query";
+import {
+  useAccount,
+  useBalance,
+  usePrepareSendTransaction,
+  useSendTransaction,
+} from "wagmi";
 
 interface IDonateCardProps {
   totalEmissions: number;
@@ -9,7 +17,16 @@ interface IDonateCardProps {
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   const [donateValue, setDonateValue] = useState(0);
-  const { isConnected } = useAccount();
+  const { isConnected, address } = useAccount();
+  const { data: balance } = useBalance({ address });
+  const { config } = usePrepareSendTransaction({
+    request: {
+      to: "0xd5d29bf172a5fA962d8CC91b228A227846b38F9A",
+      value: parseEther((!donateValue ? 0 : donateValue).toFixed(2)),
+    },
+  });
+  const { data, isLoading, isSuccess, sendTransaction } =
+    useSendTransaction(config);
 
   const handleDonateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") setDonateValue(0);
@@ -31,8 +48,8 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
           {isConnected ? (
             <>
               <div className="w-full flex justify-between items-center">
-                <p>Donate USDC</p>
-                <p>
+                <p>Donate Ethereum</p>
+                {/* <p>
                   Dept{" "}
                   {!donateValue
                     ? 0
@@ -45,18 +62,27 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
                         )
                       )}
                   % covered
-                </p>
+                </p> */}
               </div>
               <input
                 type="number"
                 value={donateValue}
                 onChange={handleDonateChange}
                 placeholder="Donation Amount in USDC"
-                className="px-4 py-2 w-full shadow-lg rounded-lg focus:outline-none"
+                className={`px-4 py-2 w-full shadow-lg rounded-lg focus:outline-none ${
+                  donateValue > parseFloat(balance?.formatted ?? "") &&
+                  "ring-2 ring-red-500"
+                }`}
               />
               <div className="w-full flex justify-end">
-                <button className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75">
-                  Donate {!donateValue ? 0 : donateValue} USDC
+                <button
+                  disabled={donateValue > parseFloat(balance?.formatted ?? "")}
+                  onClick={() => sendTransaction && sendTransaction()}
+                  className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75"
+                >
+                  {isLoading
+                    ? "loading"
+                    : `Donate ${!donateValue ? 0 : donateValue} ETH`}
                 </button>
               </div>
             </>
