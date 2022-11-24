@@ -53,6 +53,7 @@ Specify the name of your team (the same as on the discord/gather), and tell us w
 
 ```
 Philea
+
 It was great to discover how to articulate contracts and what is feasible in just a few days. 
 Only one of us had saw solidity and smart contracts before, and it was at a beginner level. 
 It has been an opportunity for us to understand how to articulate things around the partners solutions and learn about their tool.
@@ -88,5 +89,6 @@ Indeed, it will be useful if we manage to create rewards from newly produced car
 
 We manage to connect Metamask and Ledger, and we are using Nodereal to interact with our solution.
 
-We wanted to add the possibility to give recommendations on when and where (which blokchain) make a transaction a time t thanks to iExec oracles. Due to lack of time, we weren't able to do so.
+We wanted to add the possibility to give recommendations on when and where (which blokchain) make a transaction a time t thanks to iExec oracles. 
+Due to lack of time, we weren't able to do so.
 ```
