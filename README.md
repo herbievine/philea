@@ -1,34 +1,31 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+### How to setup your project
 
-## Getting Started
-
-First, run the development server:
+We have a live site at `https://philea.io`, but you can also follow along to locally install Philea:
 
 ```bash
-npm run dev
-# or
-yarn dev
+git clone https://github.com/herbievine/philea.git
+cd philea
+npm i # or yarn
+npm run dev # or yarn dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Then visit `http://localhost:3000` and it should be un and running!
 
-You can start editing the page by modifying `pages/index.tsx`. The page auto-updates as you edit the file.
+### Problem
 
-[API routes](https://nextjs.org/docs/api-routes/introduction) can be accessed on [http://localhost:3000/api/hello](http://localhost:3000/api/hello). This endpoint can be edited in `pages/api/hello.ts`.
+What problem does your project solve? How does it fit into the theme "Building a Decentralized Future"?
 
-The `pages/api` directory is mapped to `/api/*`. Files in this directory are treated as [API routes](https://nextjs.org/docs/api-routes/introduction) instead of React pages.
+### Solution
 
-## Learn More
+How did you resolve this issue? What technologies did you use? What was your biggest technical challenge and how does your solution solve it?
 
-To learn more about Next.js, take a look at the following resources:
+### Team and comments
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Specify the name of your team (the same as on the discord/gather), and tell us what you learned during this hackathon!
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js/) - your feedback and contributions are welcome!
+### Project Submission
 
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/deployment) for more details.
+- Provide an explanation of the features of your projects. You must link a demonstration video with commentary and screen recording of your presentation (10 slides max) or demo product (example: Loom, 4 minutes max).
+- Include a brief demonstration of the use of Starton or its partners iExec, BNB Chain, NodeReal, or Ledger.
+The more you use partner technologies, the more points you will earn. Example: Use the Starton API on the BNB Chain blockchain.
+You have used two partners.
