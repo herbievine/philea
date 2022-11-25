@@ -1,5 +1,7 @@
 ### How to setup your project
 
+#### Installation
+
 We have a live site at `https://philea.io`, but you can also follow along to locally install Philea:
 
 ```bash
@@ -9,9 +11,15 @@ npm i # or yarn
 npm run dev # or yarn dev
 ```
 
-Then visit `http://localhost:3000` and it should be un and running!
+#### API Keys
 
-// mention api keys
+You will also need to add an Ethereum JSON RPC URL with NodeReal, and optionally a Etherscan API key (rate limited at 1s/req).
+
+```bash
+mv .env.example .env.local
+```
+
+Then visit `http://localhost:3000` and it should be un and running!
 
 ### Problem
 
