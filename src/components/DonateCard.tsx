@@ -2,9 +2,10 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils.js";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useQuery } from "react-query";
 import {
+  chainId,
   useAccount,
   useBalance,
   usePrepareSendTransaction,
@@ -17,8 +18,11 @@ interface IDonateCardProps {
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   const [donateValue, setDonateValue] = useState(0);
-  const { isConnected, address } = useAccount();
+  const { isConnected, address, connector } = useAccount();
   const { data: balance } = useBalance({ address });
+  const [currency, setCurrency] = useState("ETH");
+  const [currencyName, setCurrencyName] = useState("Ethereum");
+
   const { config } = usePrepareSendTransaction({
     request: {
       to: "0xd5d29bf172a5fA962d8CC91b228A227846b38F9A",
@@ -32,6 +36,24 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
     if (e.target.value === "") setDonateValue(0);
     setDonateValue(parseFloat(e.target.value));
   };
+
+  useEffect(() => {
+    const updateCurrency = async () => {
+      const chain = await connector?.getChainId();
+      // console.info(chain);
+      if (chain !== undefined) {
+        if (chain === chainId.mainnet) {
+          setCurrency("ETH");
+          setCurrencyName("Ethereum");
+        }
+        if (chain === 56) {
+          setCurrency("BNB");
+          setCurrencyName("BNB");
+        }
+      }
+    }
+    updateCurrency().catch(console.error);
+  }, [connector]);
 
   return (
     <div className="w-full h-full flex justify-around items-center">
@@ -48,7 +70,7 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
           {isConnected ? (
             <>
               <div className="w-full flex justify-between items-center">
-                <p>Donate Ethereum</p>
+                <p>Donate {currencyName}</p>
                 {/* <p>
                   Dept{" "}
                   {!donateValue
@@ -82,7 +104,7 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
                 >
                   {isLoading
                     ? "loading"
-                    : `Donate ${!donateValue ? 0 : donateValue} ETH`}
+                    : `Donate ${!donateValue ? 0 : donateValue} ${currency}`}
                 </button>
               </div>
             </>
