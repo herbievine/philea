@@ -68,13 +68,9 @@ You have used two partners.
 
 Please find our presentation and our video in the related typeform submission.
 
-During the time we had at our disposal, we managed to parse some data from BNB Chain and its transactions.
-It allowed us to estimate the carbon footprint of each transactions. 
-The team was great and tried to find us the right informations by contacting all the validators. 
-Badly, we did not have the answers in time.
+Our data from Ethereum was [open sourced](https://github.com/herbievine/evm-network-emissions), and we are yet to source correct data from the BNB network.
 
-Due to this incertitude, and our willingness to have a functionable prototype, we developed to make it functional on Ethereum.
-It is also one of the blockchain where we thought our solution could make the most sense.
+So due to this lack of BNB data, and our willingness to have a functionable prototype, we developed to make it functional on Ethereum. Our project does still support the BNB chain, but the data will be using the Ethereum calculations.
 
 We wanted to use the Payment Splitter provided by Starton, but our use case didn't align with their documentation, so it was rather challenging to deploy a contract. It is in our plan to use their Payment Splitter Contract, the Flexible ERC20 Supply Contract, and the transaction Relayer to optimise our project development.
 
@@ -89,8 +85,8 @@ Used :
 - Ledger (as a connection method via Ledger Live)
 
 Partially used :
-- BNB Chain
+- BNB Chain (full web3 support is available, but we are missing emissions data)
 
 Will be used :
-- Starton
-- iExec
+- Starton (for the contracts for various different features)
+- iExec (for a real-time emissions graph)
