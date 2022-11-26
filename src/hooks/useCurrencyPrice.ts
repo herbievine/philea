@@ -1,4 +1,3 @@
-import { useEffect } from "react";
 import { useQuery } from "react-query";
 import { chainId } from "wagmi";
 import * as z from "zod";
