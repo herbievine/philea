@@ -1,99 +1,63 @@
-import dayjs from "dayjs";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useState } from "react";
 import { useQuery } from "react-query";
 import DonateCard from "../../components/DonateCard";
 import GreenCard from "../../components/GreenCard";
 import HowDonate from "../../components/HowDonate";
 import SmartBCard from "../../components/SmartBCard";
 import { useAppStateStore } from "../../hooks/useAppStateStore";
-import { emissionsApiSchema, etherscanApiSchema } from "../../lib/schema";
+import { emissionsApiSchema } from "../../lib/schema";
 
 interface IAddressProps {}
 
 const Address: NextPage<IAddressProps> = () => {
-  const [totalEmissions, setTotalEmissions] = useState(0);
   const { address } = useRouter().query;
-  const { loading, setLoading, setError } = useAppStateStore((s) => s);
-  const { data: txs } = useQuery(
+  const { error, setError } = useAppStateStore((s) => s);
+  const { data, isLoading } = useQuery(
     ["txs"],
     async () => {
-      setLoading(true);
-      setTotalEmissions(0);
-      const txsResponse = etherscanApiSchema.parse(
-        await (
-          await fetch(
-            `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=asc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`
-          )
-        ).json()
-      );
-
-      if (!txsResponse.result.length) {
+      try {
+        return emissionsApiSchema.parse(
+          await (
+            await fetch(
+              `https://carbon-footprint-dot-angle-1.ew.r.appspot.com/V1?address=${address}`
+            )
+          ).json()
+        );
+      } catch (error) {
         setError({
-          key: "no-txs",
-          msg: "No transactions found for this address",
+          key: "address",
+          msg: "Something went wrong",
         });
-        setLoading(false);
       }
-
-      return txsResponse.result;
     },
     { enabled: !!address }
   );
-  useQuery(
-    ["emissions"],
-    async () => {
-      setLoading(true);
-      setTotalEmissions(0);
 
-      let i = 0;
-      const emissionsResponse = emissionsApiSchema.parse(
-        await (await fetch("/static/eth_emissions.json")).json()
-      );
-
-      txs?.forEach((tx) => {
-        if (parseInt(tx.blockNumber) > 15537394) return;
-
-        for (i; i < emissionsResponse.length; i++) {
-          if (
-            dayjs.unix(parseInt(tx.timeStamp)).format("YYYY-MM-DD") ===
-            emissionsResponse[i].date
-          ) {
-            setTotalEmissions(
-              (prev) => prev + emissionsResponse[i].emissions_per_tx
-            );
-            break;
-          }
-        }
-      });
-
-      setLoading(false);
-    },
-    {
-      enabled: !!txs && !!address,
-    }
-  );
-
-  if (loading)
+  if (isLoading)
     return (
       <div className="w-full h-screen flex justify-center items-center">
-        Loading...
+        Computing your transactions...
       </div>
     );
-  if (!txs || txs?.length === 0)
+  if (error?.key === "address")
     return <div>No transactions found for this address</div>;
 
   return (
     <div className="w-full h-screen grid overflow-hidden grid-cols-2 grid-rows-2">
       <GreenCard
-        totalEmissions={totalEmissions}
-        firstTxTimestamp={txs[0].timeStamp}
+        totalEmissions={
+          data ? (data.posData?.impact ?? 0) + (data.powData?.impact ?? 0) : 0
+        }
       />
       <HowDonate />
       <SmartBCard />
-      <DonateCard totalEmissions={totalEmissions} />
+      <DonateCard
+        totalEmissions={
+          data ? (data.posData?.impact ?? 0) + (data.powData?.impact ?? 0) : 0
+        }
+      />
     </div>
   );
 };

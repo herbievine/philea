@@ -1,5 +1,6 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseEther } from "ethers/lib/utils.js";
+import { useRouter } from "next/router";
 import type React from "react";
 import { useState } from "react";
 import {
@@ -16,6 +17,7 @@ interface IDonateCardProps {
 }
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
+  const { push } = useRouter();
   const [donateValue, setDonateValue] = useState(0);
   const { isConnected, address } = useAccount();
   const { data: balance } = useBalance({ address });
@@ -29,8 +31,8 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   });
   const { isLoading, sendTransaction } = useSendTransaction({
     ...config,
-    onSuccess(data, variables, context) {
-      console.log("success", data, variables, context);
+    onSuccess(data) {
+      push(`/success/${data.hash}`);
     },
   });
 
@@ -38,6 +40,8 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
     if (e.target.value === "") setDonateValue(0);
     setDonateValue(parseFloat(e.target.value));
   };
+
+  // if (typeof window === "undefined") return <p>loading...</p>;
 
   return (
     <div className="w-full h-full flex justify-around items-center">
