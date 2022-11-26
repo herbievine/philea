@@ -24,7 +24,7 @@ const GreenCard: React.FC<IGreenCardProps> = ({
             <sub className="font-black">2</sub>
           </span>
           <span className="text-3xl font-black">
-            or approx ${(totalEmissions * 0.02).toFixed(2)}
+            or approx ${(totalEmissions * 0.025).toFixed(2)}
           </span>
           <span className="text-xl font-black">
             since{" "}

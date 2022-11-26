@@ -13,8 +13,10 @@ const useAddressStore = create<AddressStore>()(
     address: "",
     setAddress: (address: string) => {
       if (
-        z.string().parse(address) &&
-        address.trim().match(/^0x[0-9a-fA-F]{40}$/)
+        z
+          .string()
+          .regex(/^0x[0-9a-fA-F]{40}$/)
+          .safeParse(address).success
       ) {
         useAppStateStore.getState().setError(null);
         set({ address });

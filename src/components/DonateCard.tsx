@@ -1,16 +1,15 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { BigNumber } from "ethers";
 import { parseEther } from "ethers/lib/utils.js";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useQuery } from "react-query";
 import {
-  chainId,
   useAccount,
   useBalance,
+  useNetwork,
   usePrepareSendTransaction,
   useSendTransaction,
 } from "wagmi";
+import { useCurrencyPrice } from "../hooks/useCurrencyPrice";
 
 interface IDonateCardProps {
   totalEmissions: number;
@@ -18,42 +17,27 @@ interface IDonateCardProps {
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   const [donateValue, setDonateValue] = useState(0);
-  const { isConnected, address, connector } = useAccount();
+  const { isConnected, address } = useAccount();
   const { data: balance } = useBalance({ address });
-  const [currency, setCurrency] = useState("ETH");
-  const [currencyName, setCurrencyName] = useState("Ethereum");
-
+  const { chain } = useNetwork();
+  const { value, status } = useCurrencyPrice(chain?.id);
   const { config } = usePrepareSendTransaction({
     request: {
-      to: "0xd5d29bf172a5fA962d8CC91b228A227846b38F9A",
+      to: "0x0fee0EB39307bE9c9cCBb505bF1258d1dF6B7345",
       value: parseEther((!donateValue ? 0 : donateValue).toFixed(2)),
     },
   });
-  const { data, isLoading, isSuccess, sendTransaction } =
-    useSendTransaction(config);
+  const { isLoading, sendTransaction } = useSendTransaction({
+    ...config,
+    onSuccess(data, variables, context) {
+      console.log("success", data, variables, context);
+    },
+  });
 
   const handleDonateChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.value === "") setDonateValue(0);
     setDonateValue(parseFloat(e.target.value));
   };
-
-  useEffect(() => {
-    const updateCurrency = async () => {
-      const chain = await connector?.getChainId();
-      // console.info(chain);
-      if (chain !== undefined) {
-        if (chain === chainId.mainnet) {
-          setCurrency("ETH");
-          setCurrencyName("Ethereum");
-        }
-        if (chain === 56) {
-          setCurrency("BNB");
-          setCurrencyName("BNB");
-        }
-      }
-    }
-    updateCurrency().catch(console.error);
-  }, [connector]);
 
   return (
     <div className="w-full h-full flex justify-around items-center">
@@ -70,27 +54,24 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
           {isConnected ? (
             <>
               <div className="w-full flex justify-between items-center">
-                <p>Donate {currencyName}</p>
-                {/* <p>
-                  Dept{" "}
-                  {!donateValue
-                    ? 0
-                    : Math.round(
-                        parseFloat(
-                          (
-                            (donateValue / (totalEmissions * 0.02)) *
-                            100
-                          ).toFixed(2)
-                        )
-                      )}
-                  % covered
-                </p> */}
+                <p>Donate {chain?.nativeCurrency?.name}</p>
+                {status === "ok" && (
+                  <p>
+                    {!donateValue
+                      ? 0
+                      : (
+                          (donateValue / ((totalEmissions * 0.025) / value)) *
+                          100
+                        ).toFixed(2)}
+                    % covered
+                  </p>
+                )}
               </div>
               <input
                 type="number"
                 value={donateValue}
                 onChange={handleDonateChange}
-                placeholder="Donation Amount in USDC"
+                placeholder={`Donation Amount in ${chain?.nativeCurrency?.name}`}
                 className={`px-4 py-2 w-full shadow-lg rounded-lg focus:outline-none ${
                   donateValue > parseFloat(balance?.formatted ?? "") &&
                   "ring-2 ring-red-500"
@@ -103,8 +84,10 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
                   className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75"
                 >
                   {isLoading
-                    ? "loading"
-                    : `Donate ${!donateValue ? 0 : donateValue} ${currency}`}
+                    ? "Processing..."
+                    : `Donate ${!donateValue ? 0 : donateValue} ${
+                        chain?.nativeCurrency?.symbol
+                      }`}
                 </button>
               </div>
             </>

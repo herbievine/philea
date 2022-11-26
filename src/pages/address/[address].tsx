@@ -17,14 +17,6 @@ import { emissionsApiSchema, etherscanApiSchema } from "../../lib/schema";
 
 interface IAddressProps {}
 
-const getExplorerUrl = (chain: number, address: any) => {
-  if (chain === chainId.mainnet) {
-    return(`https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=asc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`)
-  } else {
-    return(`https://api.bscscan.com/api?module=account&action=txlist&address=${address}&sort=asc&apikey=${process.env.NEXT_PUBLIC_BSCSCAN_API_KEY}`);
-  }
-}
-
 const Address: NextPage<IAddressProps> = () => {
   const [totalEmissions, setTotalEmissions] = useState(0);
   const { address } = useRouter().query;
@@ -35,21 +27,11 @@ const Address: NextPage<IAddressProps> = () => {
     async () => {
       setLoading(true);
       setTotalEmissions(0);
-      const chain = await connector?.getChainId();
-      if (chain === undefined) {
-        setError({
-          key: "no-txs",
-          msg: "No chain selected",
-        });
-        setLoading(false);
-        return [];
-      }
-      const url = getExplorerUrl(chain, address);
       const txsResponse = etherscanApiSchema.parse(
         await (
           await fetch(
-            url
-            )
+            `https://api.etherscan.io/api?module=account&action=txlist&address=${address}&sort=asc&apikey=${process.env.NEXT_PUBLIC_ETHERSCAN_API_KEY}`
+          )
         ).json()
       );
 

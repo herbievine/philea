@@ -8,6 +8,7 @@ import { useAddressStore } from "../hooks/useAddressStore";
 import { useAppStateStore } from "../hooks/useAppStateStore";
 import Link from "next/link";
 import Hero from "../assets/Hero";
+import * as z from "zod";
 
 interface IHomeProps {}
 
@@ -15,30 +16,24 @@ const Home: NextPage<IHomeProps> = () => {
   const [tempAddress, setTempAddress] = useState("");
   const { error } = useAppStateStore((state) => state);
   const { address, setAddress } = useAddressStore((state) => state);
-  const { address: connectedAddress, isDisconnected } = useAccount();
-  const { disconnect } = useDisconnect();
 
-  useEffect(() => {
-    if (connectedAddress) setAddress(connectedAddress);
-  }, [connectedAddress, setAddress, isDisconnected]);
-
-  const handleAddressChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setTempAddress(e.target.value);
-    if (e.target.value.trim().match(/^0x[0-9a-fA-F]{40}$/)) {
-      setAddress(e.target.value);
-      disconnect();
+  const handleAddressChange = ({
+    target,
+  }: React.ChangeEvent<HTMLInputElement>) => {
+    setTempAddress(target.value);
+    if (
+      z
+        .string()
+        .regex(/^0x[0-9a-fA-F]{40}$/)
+        .safeParse(target.value).success
+    ) {
+      setAddress(target.value);
     }
   };
 
-  useEffect(() => {
-    console.log({ error });
-  }, [error]);
-
   return (
     <div className="w-full h-screen flex justify-evenly items-center">
-      <div className="">
-        <Hero height={500} />
-      </div>
+      <Hero height={500} />
       <div className="flex flex-col space-y-4">
         <div className="w-1/6 h-4 bg-black" />
         <h1 className="text-2xl font-black">
@@ -55,7 +50,6 @@ const Home: NextPage<IHomeProps> = () => {
           <li>3. Discover ways to reduce your carbon footprint</li>
         </ol>
         <div className="w-full flex items-center space-x-4">
-          <ConnectButton chainStatus="icon" showBalance={false} />
           <input
             type="text"
             value={tempAddress}

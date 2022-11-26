@@ -12,39 +12,43 @@ import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
 const bnbChain: Chain = {
   id: 56,
-  name: 'BNB Chain',
-  network: 'bnbchain',
-  // iconUrl: 'https://example.com/icon.svg',
-  // iconBackground: '#fff',
+  name: "BNB Chain",
+  network: "bnbchain",
+  iconUrl:
+    "https://upload.wikimedia.org/wikipedia/commons/1/1c/BNB%2C_native_cryptocurrency_for_the_Binance_Smart_Chain.svg",
+  iconBackground: "#fff",
   nativeCurrency: {
     decimals: 18,
-    name: 'BNB',
-    symbol: 'BNB',
+    name: "BNB",
+    symbol: "BNB",
   },
   rpcUrls: {
-    default: `https://bsc-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_RPC_API_KEY}`,
+    default: `https://bsc-mainnet.nodereal.io/v1/`,
   },
   blockExplorers: {
-    default: { name: 'BscScan', url: 'https://bscscan.com' },
-    etherscan: { name: 'BscScan', url: 'https://bscscan.com' },
+    default: { name: "BscScan", url: "https://bscscan.com" },
+    etherscan: { name: "BscScan", url: "https://bscscan.com" },
   },
   testnet: false,
 };
 
 const { chains, provider } = configureChains(
-  [chain.mainnet, bnbChain /*chain.polygon*/],
+  [chain.mainnet, bnbChain, chain.polygon],
   [
     jsonRpcProvider({
       rpc: (chain) => {
         if (chain.id === chainId.mainnet) {
+          return {
+            http: process.env.NEXT_PUBLIC_RPC_ETHEREUM_URL ?? "",
+          };
+        } else if (chain.id === chainId.polygon) {
+          return {
+            http: process.env.NEXT_PUBLIC_RPC_POLYGON_URL ?? "",
+          };
+        }
         return {
-          http: `https://eth-mainnet.nodereal.io/v1/${process.env.NEXT_PUBLIC_RPC_API_KEY}`,
+          http: process.env.NEXT_PUBLIC_RPC_BSC_URL ?? "",
         };
-      } else {
-        return {
-          http: chain.rpcUrls.default,
-        };
-      }
       },
     }),
   ]
