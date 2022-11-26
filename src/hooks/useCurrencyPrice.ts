@@ -36,7 +36,7 @@ const useCurrencyPrice = (
         );
 
         return {
-          value: parseFloat(res.result.maticusd),
+          value: parseFloat(res.result.ethusd),
           status: "ok",
         };
       } else if (chain === 56) {

@@ -1,19 +1,19 @@
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import type React from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
 import DonateCard from "../../components/DonateCard";
 import GreenCard from "../../components/GreenCard";
 import HowDonate from "../../components/HowDonate";
 import SmartBCard from "../../components/SmartBCard";
-import { useAppStateStore } from "../../hooks/useAppStateStore";
 import { emissionsApiSchema } from "../../lib/schema";
 
 interface IAddressProps {}
 
 const Address: NextPage<IAddressProps> = () => {
   const { address } = useRouter().query;
-  const { error, setError } = useAppStateStore((s) => s);
+  const [error, setError] = useState<string | null>(null);
   const { data, isLoading } = useQuery(
     ["txs"],
     async () => {
@@ -26,10 +26,7 @@ const Address: NextPage<IAddressProps> = () => {
           ).json()
         );
       } catch (error) {
-        setError({
-          key: "address",
-          msg: "Something went wrong",
-        });
+        setError("Error fetching data. Please try again later.");
       }
     },
     { enabled: !!address }
@@ -41,8 +38,12 @@ const Address: NextPage<IAddressProps> = () => {
         Computing your transactions...
       </div>
     );
-  if (error?.key === "address")
-    return <div>No transactions found for this address</div>;
+  if (error)
+    return (
+      <div className="w-full h-screen flex justify-center items-center">
+        {error}
+      </div>
+    );
 
   return (
     <div className="w-full h-screen grid overflow-hidden grid-cols-2 grid-rows-2">

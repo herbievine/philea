@@ -2,7 +2,7 @@ import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseEther } from "ethers/lib/utils.js";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   useAccount,
   useBalance,
@@ -19,6 +19,7 @@ interface IDonateCardProps {
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   const { push } = useRouter();
   const [donateValue, setDonateValue] = useState(0);
+  const [deptPercent, setDeptPercent] = useState(0);
   const { isConnected, address } = useAccount();
   const { data: balance } = useBalance({ address });
   const { chain } = useNetwork();
@@ -41,6 +42,14 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
     setDonateValue(parseFloat(e.target.value));
   };
 
+  useEffect(() => {
+    if (donateValue) {
+      setDeptPercent(donateValue / ((totalEmissions * 25) / value));
+    } else {
+      setDeptPercent(0);
+    }
+  }, [donateValue, totalEmissions, value]);
+
   // if (typeof window === "undefined") return <p>loading...</p>;
 
   return (
@@ -60,15 +69,7 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
               <div className="w-full flex justify-between items-center">
                 <p>Donate {chain?.nativeCurrency?.name}</p>
                 {status === "ok" && (
-                  <p>
-                    {!donateValue
-                      ? 0
-                      : (
-                          (donateValue / ((totalEmissions * 0.025) / value)) *
-                          100
-                        ).toFixed(2)}
-                    % covered
-                  </p>
+                  <p>{(deptPercent * 100).toFixed(2)}% covered</p>
                 )}
               </div>
               <input
@@ -77,17 +78,23 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
                 onChange={handleDonateChange}
                 placeholder={`Donation Amount in ${chain?.nativeCurrency?.name}`}
                 className={`px-4 py-2 w-full shadow-lg rounded-lg focus:outline-none ${
-                  donateValue > parseFloat(balance?.formatted ?? "") &&
-                  "ring-2 ring-red-500"
+                  donateValue > parseFloat(balance?.formatted ?? "")
+                    ? "ring-2 ring-red-500"
+                    : deptPercent >= 1 && "ring-2 ring-green-500"
                 }`}
               />
-              <div className="w-full flex justify-end">
+              <div className="w-full flex justify-end items-center space-x-4">
+                <span className="text-gray-700">
+                  {donateValue ? `$${(donateValue * value).toFixed(2)}` : 0}
+                </span>
                 <button
                   disabled={donateValue > parseFloat(balance?.formatted ?? "")}
                   onClick={() => sendTransaction && sendTransaction()}
                   className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75"
                 >
-                  {isLoading
+                  {donateValue > parseFloat(balance?.formatted ?? "")
+                    ? "Insufficient Balance"
+                    : isLoading
                     ? "Processing..."
                     : `Donate ${!donateValue ? 0 : donateValue} ${
                         chain?.nativeCurrency?.symbol
