@@ -1,9 +1,7 @@
 import type { NextPage } from "next";
 import type React from "react";
 import Chevron from "../assets/Chevron";
-import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { useEffect, useState } from "react";
-import { useAccount, useDisconnect } from "wagmi";
+import { useState } from "react";
 import { useAddressStore } from "../hooks/useAddressStore";
 import { useAppStateStore } from "../hooks/useAppStateStore";
 import Link from "next/link";

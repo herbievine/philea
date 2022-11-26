@@ -1,8 +1,7 @@
 import { useEffect } from "react";
 import { useQuery } from "react-query";
-import { chainId, ChainNotConfiguredError } from "wagmi";
+import { chainId } from "wagmi";
 import * as z from "zod";
-import { useAppStateStore } from "./useAppStateStore";
 
 const explorerApiResponse = z.object({
   status: z.string(),
@@ -13,7 +12,6 @@ const explorerApiResponse = z.object({
 const useCurrencyPrice = (
   chain?: number
 ): { value: number; status: string } => {
-  const { setError } = useAppStateStore((s) => s);
   const { data } = useQuery(["currencyPrice", chain], async () => {
     try {
       if (chain === chainId.mainnet) {

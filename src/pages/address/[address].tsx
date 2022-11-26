@@ -1,13 +1,9 @@
-import { ConnectButton } from "@rainbow-me/rainbowkit";
 import dayjs from "dayjs";
 import type { NextPage } from "next";
 import { useRouter } from "next/router";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useQuery } from "react-query";
-import { useAccount, chainId } from "wagmi";
-import Giving from "../../assets/Giving";
-import Seed from "../../assets/Seed";
 import DonateCard from "../../components/DonateCard";
 import GreenCard from "../../components/GreenCard";
 import HowDonate from "../../components/HowDonate";
@@ -20,8 +16,7 @@ interface IAddressProps {}
 const Address: NextPage<IAddressProps> = () => {
   const [totalEmissions, setTotalEmissions] = useState(0);
   const { address } = useRouter().query;
-  const { loading, setLoading, error, setError } = useAppStateStore((s) => s);
-  const { address: connectedAddress, isConnected, connector } = useAccount();
+  const { loading, setLoading, setError } = useAppStateStore((s) => s);
   const { data: txs } = useQuery(
     ["txs"],
     async () => {
@@ -47,7 +42,7 @@ const Address: NextPage<IAddressProps> = () => {
     },
     { enabled: !!address }
   );
-  const { data: emissionsData, isLoading: emissionsLoading } = useQuery(
+  useQuery(
     ["emissions"],
     async () => {
       setLoading(true);
@@ -75,8 +70,6 @@ const Address: NextPage<IAddressProps> = () => {
       });
 
       setLoading(false);
-
-      return emissionsResponse;
     },
     {
       enabled: !!txs && !!address,

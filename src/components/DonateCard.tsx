@@ -1,7 +1,7 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { parseEther } from "ethers/lib/utils.js";
 import type React from "react";
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import {
   useAccount,
   useBalance,
