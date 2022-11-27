@@ -33,7 +33,7 @@ const bnbChain: Chain = {
 };
 
 const { chains, provider } = configureChains(
-  [chain.mainnet, bnbChain, chain.polygon],
+  [/*chain.mainnet, bnbChain,*/ chain.polygon],
   [
     jsonRpcProvider({
       rpc: (chain) => {
@@ -79,4 +79,6 @@ const wagmiClient = createClient({
   provider,
 });
 
-export { wagmiClient, chains };
+const CONTRACT_ADDRESS = "0x477310FBE84B7cF18F678F63E2a95f410995340f";
+
+export { wagmiClient, chains, CONTRACT_ADDRESS };

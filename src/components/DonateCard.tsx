@@ -1,39 +1,46 @@
 import { ConnectButton } from "@rainbow-me/rainbowkit";
-import { parseEther } from "ethers/lib/utils.js";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useEffect, useState } from "react";
 import {
   useAccount,
   useBalance,
+  useContractWrite,
   useNetwork,
-  usePrepareSendTransaction,
-  useSendTransaction,
+  usePrepareContractWrite,
 } from "wagmi";
 import { useCurrencyPrice } from "../hooks/useCurrencyPrice";
+import { CONTRACT_ADDRESS } from "../lib/web3";
+import contractAbi from "../lib/contractAbi.json";
+import { ethers } from "ethers";
 
 interface IDonateCardProps {
   totalEmissions: number;
 }
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
-  const { push } = useRouter();
+  const { push, query } = useRouter();
   const [donateValue, setDonateValue] = useState(0);
   const [deptPercent, setDeptPercent] = useState(0);
   const { isConnected, address } = useAccount();
   const { data: balance } = useBalance({ address });
   const { chain } = useNetwork();
   const { value, status } = useCurrencyPrice(chain?.id);
-  const { config } = usePrepareSendTransaction({
-    request: {
-      to: "0x0fee0EB39307bE9c9cCBb505bF1258d1dF6B7345",
-      value: parseEther((!donateValue ? 0 : donateValue).toFixed(2)),
+  const { config } = usePrepareContractWrite({
+    address: CONTRACT_ADDRESS,
+    abi: contractAbi,
+    functionName: "sendDonation",
+    args: [query?.address],
+    overrides: {
+      value: ethers.utils.parseEther(
+        donateValue ? donateValue.toString() : "0"
+      ),
     },
   });
-  const { isLoading, sendTransaction } = useSendTransaction({
+  const { isLoading, write } = useContractWrite({
     ...config,
     onSuccess(data) {
-      push(`/success/${data.hash}`);
+      push(`/success${data.hash}`);
     },
   });
 
@@ -85,11 +92,11 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
               />
               <div className="w-full flex justify-end items-center space-x-4">
                 <span className="text-gray-700">
-                  {donateValue ? `$${(donateValue * value).toFixed(2)}` : 0}
+                  {donateValue ? `$${(donateValue * value).toFixed(2)}` : "$0"}
                 </span>
                 <button
                   disabled={donateValue > parseFloat(balance?.formatted ?? "")}
-                  onClick={() => sendTransaction && sendTransaction()}
+                  onClick={() => write?.()}
                   className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75"
                 >
                   {donateValue > parseFloat(balance?.formatted ?? "")
