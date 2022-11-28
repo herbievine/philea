@@ -30,7 +30,7 @@ const GreenCard: React.FC<IGreenCardProps> = ({ totalEmissions }) => {
 
   return (
     <div className="w-full h-full flex justify-around items-center">
-      <div className="w-2/3 h-3/4 p-8 flex flex-col rounded-xl shadow-md bg-[#0e76fd] text-white">
+      <div className="w-2/3 h-3/4 p-8 flex flex-col items-center rounded-xl shadow-md bg-[#0e76fd] text-white">
         <div className="flex items-center space-x-2">
           <h1 className="font-black text-lg">Your Carbon Footprint Card</h1>
           <Seed width={20} fill="white" />
