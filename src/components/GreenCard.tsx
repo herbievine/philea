@@ -1,8 +1,9 @@
 import { useRouter } from "next/router";
 import type React from "react";
+import { useEffect, useState } from "react";
 import { useBalance } from "wagmi";
 import Seed from "../assets/Seed";
-import { CONTRACT_ADDRESS } from "../lib/web3";
+import { useContractAddress } from "../hooks/useContractAddress";
 
 interface IGreenCardProps {
   totalEmissions: number;
@@ -10,10 +11,20 @@ interface IGreenCardProps {
 
 const GreenCard: React.FC<IGreenCardProps> = ({ totalEmissions }) => {
   const { query } = useRouter();
+  const [deptPaid, setDeptPaid] = useState(0);
+  const contractAddress = useContractAddress();
   const { data, isLoading } = useBalance({
     address: query.address as `0x${string}`,
-    token: CONTRACT_ADDRESS,
+    token: contractAddress,
   });
+
+  useEffect(() => {
+    if (data?.formatted) {
+      setDeptPaid(
+        (parseFloat(data?.formatted ?? "0") / 1_000_000 / totalEmissions) * 100
+      );
+    }
+  }, [data?.formatted, totalEmissions]);
 
   return (
     <div className="w-full h-full flex justify-around items-center">
@@ -33,24 +44,14 @@ const GreenCard: React.FC<IGreenCardProps> = ({ totalEmissions }) => {
         </div>
         <div>
           <span className="font-black text-lg">
-            Dept paid off:{" "}
-            {(
-              (parseFloat(data?.formatted ?? "0") /
-                10_000 /
-                (totalEmissions * 25)) *
-              100
-            ).toFixed(2)}
-            %
+            Dept paid off: {deptPaid.toFixed(2)}%
           </span>
           <div className="w-full h-10 bg-blue-500 rounded-lg">
             {!isLoading && data && (
               <div
                 style={{
                   width: `${
-                    (parseFloat(data.formatted) /
-                      10_000 /
-                      (totalEmissions * 25)) *
-                    100
+                    deptPaid > 100 ? 100 : deptPaid < 0 ? 0 : deptPaid
                   }%`,
                 }}
                 className="h-10 bg-blue-400 rounded-lg"

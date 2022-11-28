@@ -10,9 +10,9 @@ import {
   usePrepareContractWrite,
 } from "wagmi";
 import { useCurrencyPrice } from "../hooks/useCurrencyPrice";
-import { CONTRACT_ADDRESS } from "../lib/web3";
 import contractAbi from "../lib/contractAbi.json";
 import { ethers } from "ethers";
+import { useContractAddress } from "../hooks/useContractAddress";
 
 interface IDonateCardProps {
   totalEmissions: number;
@@ -26,8 +26,9 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
   const { data: balance } = useBalance({ address });
   const { chain } = useNetwork();
   const { value, status } = useCurrencyPrice(chain?.id);
+  const contractAddress = useContractAddress();
   const { config } = usePrepareContractWrite({
-    address: CONTRACT_ADDRESS,
+    address: contractAddress,
     abi: contractAbi,
     functionName: "sendDonation",
     args: [query?.address],

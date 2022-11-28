@@ -18,6 +18,7 @@ const App = ({ Component, pageProps }: AppProps) => {
             <div className="w-full h-24 px-8 flex justify-between items-center">
               <h1 className="text-xl font-black">Philea</h1>
               <div className="flex items-center space-x-6 text-md font-black">
+                <Link href="/leaderboard">Leaderboard</Link>
                 <Link href="/team">Team</Link>
                 <a
                   href="https://github.com/herbievine/philea"
