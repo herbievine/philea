@@ -1,4 +1,4 @@
-import { Chain, connectorsForWallets } from "@rainbow-me/rainbowkit";
+import { connectorsForWallets } from "@rainbow-me/rainbowkit";
 import {
   metaMaskWallet,
   rainbowWallet,
@@ -10,27 +10,27 @@ import {
 import { chain, chainId, configureChains, createClient } from "wagmi";
 import { jsonRpcProvider } from "wagmi/providers/jsonRpc";
 
-const bnbChain: Chain = {
-  id: 56,
-  name: "BNB Chain",
-  network: "bnbchain",
-  iconUrl:
-    "https://upload.wikimedia.org/wikipedia/commons/1/1c/BNB%2C_native_cryptocurrency_for_the_Binance_Smart_Chain.svg",
-  iconBackground: "#fff",
-  nativeCurrency: {
-    decimals: 18,
-    name: "BNB",
-    symbol: "BNB",
-  },
-  rpcUrls: {
-    default: `https://bsc-mainnet.nodereal.io/v1/`,
-  },
-  blockExplorers: {
-    default: { name: "BscScan", url: "https://bscscan.com" },
-    etherscan: { name: "BscScan", url: "https://bscscan.com" },
-  },
-  testnet: false,
-};
+// const bnbChain: Chain = {
+//   id: 56,
+//   name: "BNB Chain",
+//   network: "bnbchain",
+//   iconUrl:
+//     "https://upload.wikimedia.org/wikipedia/commons/1/1c/BNB%2C_native_cryptocurrency_for_the_Binance_Smart_Chain.svg",
+//   iconBackground: "#fff",
+//   nativeCurrency: {
+//     decimals: 18,
+//     name: "BNB",
+//     symbol: "BNB",
+//   },
+//   rpcUrls: {
+//     default: `https://bsc-mainnet.nodereal.io/v1/`,
+//   },
+//   blockExplorers: {
+//     default: { name: "BscScan", url: "https://bscscan.com" },
+//     etherscan: { name: "BscScan", url: "https://bscscan.com" },
+//   },
+//   testnet: false,
+// };
 
 const { chains, provider } = configureChains(
   [/*chain.mainnet, bnbChain,*/ chain.polygon],
