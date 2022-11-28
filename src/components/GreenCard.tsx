@@ -1,7 +1,8 @@
+import { ConnectButton } from "@rainbow-me/rainbowkit";
 import { useRouter } from "next/router";
 import type React from "react";
 import { useEffect, useState } from "react";
-import { useBalance } from "wagmi";
+import { useAccount, useBalance } from "wagmi";
 import Seed from "../assets/Seed";
 import { useContractAddress } from "../hooks/useContractAddress";
 
@@ -13,6 +14,7 @@ const GreenCard: React.FC<IGreenCardProps> = ({ totalEmissions }) => {
   const { query } = useRouter();
   const [deptPaid, setDeptPaid] = useState(0);
   const contractAddress = useContractAddress();
+  const { isConnected } = useAccount();
   const { data, isLoading } = useBalance({
     address: query.address as `0x${string}`,
     token: contractAddress,
@@ -42,26 +44,31 @@ const GreenCard: React.FC<IGreenCardProps> = ({ totalEmissions }) => {
             or approx ${(totalEmissions * 25).toFixed(2)}
           </span>
         </div>
-        <div>
-          <span className="font-black text-lg">
-            Dept paid off: {deptPaid.toFixed(2)}%
-          </span>
-          <div className="w-full h-10 bg-blue-500 rounded-lg">
-            {!isLoading && data && (
-              <div
-                style={{
-                  width: `${
-                    deptPaid > 100 ? 100 : deptPaid < 0 ? 0 : deptPaid
-                  }%`,
-                }}
-                className="h-10 bg-blue-400 rounded-lg"
-              ></div>
-              // <span className="text-3xl font-black">
-              //   Debt paid off: {parseFloat(data.formatted) / 1_000}kg
-              // </span>
-            )}
+        {isConnected ? (
+          <div>
+            <span className="font-black text-lg">
+              Dept paid off: {deptPaid.toFixed(2)}% or{" "}
+              {(parseFloat(data?.formatted ?? "0") / 1_000).toFixed(2)}kg
+            </span>
+            <div className="w-full h-10 bg-blue-500 rounded-lg">
+              {!isLoading && data && (
+                <div
+                  style={{
+                    width: `${
+                      deptPaid > 100 ? 100 : deptPaid < 0 ? 0 : deptPaid
+                    }%`,
+                  }}
+                  className="h-10 bg-blue-400 rounded-lg"
+                ></div>
+                // <span className="text-3xl font-black">
+                //   Debt paid off: {parseFloat(data.formatted) / 1_000}kg
+                // </span>
+              )}
+            </div>
           </div>
-        </div>
+        ) : (
+          <ConnectButton label="Connect Wallet to see Debt Coverage" />
+        )}
       </div>
     </div>
   );

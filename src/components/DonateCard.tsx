@@ -13,13 +13,14 @@ import { useCurrencyPrice } from "../hooks/useCurrencyPrice";
 import contractAbi from "../lib/contractAbi.json";
 import { ethers } from "ethers";
 import { useContractAddress } from "../hooks/useContractAddress";
+import Loading from "../assets/Loading";
 
 interface IDonateCardProps {
   totalEmissions: number;
 }
 
 const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
-  const { push, query } = useRouter();
+  const { reload, query } = useRouter();
   const [donateValue, setDonateValue] = useState(0);
   const [deptPercent, setDeptPercent] = useState(0);
   const { isConnected, address } = useAccount();
@@ -38,10 +39,10 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
       ),
     },
   });
-  const { isLoading, write } = useContractWrite({
+  const { isLoading, write, isSuccess } = useContractWrite({
     ...config,
-    onSuccess(data) {
-      push(`/success${data.hash}`);
+    onSuccess() {
+      setTimeout(() => reload(), 1000 * 5);
     },
   });
 
@@ -100,13 +101,23 @@ const DonateCard: React.FC<IDonateCardProps> = ({ totalEmissions }) => {
                   onClick={() => write?.()}
                   className="px-4 py-2 shadow-lg rounded-lg bg-[#0e76fd] text-white focus:outline-none hover:scale-105 duration-75"
                 >
-                  {donateValue > parseFloat(balance?.formatted ?? "")
-                    ? "Insufficient Balance"
-                    : isLoading
-                    ? "Processing..."
-                    : `Donate ${!donateValue ? 0 : donateValue} ${
-                        chain?.nativeCurrency?.symbol
-                      }`}
+                  {isSuccess ? (
+                    <div className="flex items-center">
+                      <Loading width={28} />
+                      <p>Success! Redirecting...</p>
+                    </div>
+                  ) : donateValue > parseFloat(balance?.formatted ?? "") ? (
+                    "Insufficient Balance"
+                  ) : isLoading ? (
+                    <div className="flex items-center">
+                      <Loading width={28} />
+                      <p>Processing...</p>
+                    </div>
+                  ) : (
+                    `Donate ${!donateValue ? 0 : donateValue} ${
+                      chain?.nativeCurrency?.symbol
+                    }`
+                  )}
                 </button>
               </div>
             </>
