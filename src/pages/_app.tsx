@@ -16,7 +16,9 @@ const App = ({ Component, pageProps }: AppProps) => {
         <RainbowKitProvider chains={chains}>
           <div className="w-full h-screen flex flex-col">
             <div className="w-full h-24 px-8 flex justify-between items-center">
-              <h1 className="text-xl font-black">Philea</h1>
+              <Link href="/">
+                <h1 className="text-xl font-black">Philea</h1>
+              </Link>
               <div className="flex items-center space-x-6 text-md font-black">
                 <Link href="/leaderboard">Leaderboard</Link>
                 <Link href="/team">Team</Link>
